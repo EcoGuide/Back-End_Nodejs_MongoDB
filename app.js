@@ -31,7 +31,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
   });
 
 app.get('/api', (req, res) => {
-  res.send('hello');
+  res.sendFile(path.join(__dirname, "../View/facebook.html"));
 });
 
 app.use(authRoutes);

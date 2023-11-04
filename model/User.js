@@ -9,6 +9,11 @@ dotenv.config();
 //-------------------------------------------- USER SCHEMA  --------------------------------------------------
 
 const userSchema = new mongoose.Schema({
+  facebookId: {
+    type: String,
+    unique: true,
+    sparse: true  // Permet d'avoir plusieurs utilisateurs sans ID Facebook (null ou non défini)
+  },
   email: {
     type: String,
     required: [true , 'Please enter a  Email'  ],
@@ -30,7 +35,7 @@ const userSchema = new mongoose.Schema({
   },
   image:{
     type :String,
-    required: [true , 'Please enter a file{'  ],
+    // required: [true , 'Please enter a file{'  ],
   },
   role:{
     type :String,
