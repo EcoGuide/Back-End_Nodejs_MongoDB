@@ -35,31 +35,38 @@ const secretKey = process.env.SECRET_KEY;
 // });
 
 var transporter= nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  service:"gmail",
   auth: {
-    user: "08fe374607a4f2",
-    pass: "3d63cd83b30b68"
+    user: "fedi.benromdhane@esprit.tn",
+    pass: "bmzqluzhxefmqgde"
   }
 });
+// var transporter= nodemailer.createTransport({
+//   host: "sandbox.smtp.mailtrap.io",
+//   port: 2525,
+//   auth: {
+//     user: "08fe374607a4f2",
+//     pass: "3d63cd83b30b68"
+//   }
+// });
 // ------------Test SENING MAIL------------------------------------------------
 // Email options
 const mailOptions = {
   from: email_S,
-  to: 'fedi.benromdhane@esprit.tn', // Replace with recipient's email address
+  to: 'a.rebhy10@gmail.com', // Replace with recipient's email address
   subject: 'Sending Email using Node.js',
   text: 'Hello That was easy!',
 }
 
 // TEST  MAILLING
- transporter.verify((error,succes)=>{
-  if(error){
-    console.log(error);
-  }else {
-    console.log("Hello ,Ready to send Mails ");
-    console.log(succes);
-  }
-})
+//  transporter.verify((error,succes)=>{
+//   if(error){
+//     console.log(error);
+//   }else {
+//     console.log("Hello ,Ready to send Mails ");
+//     console.log(succes);
+//   }
+// })
 // transporter.sendMail(mailOptions, function (error, info) {
 //   if (error) {
 //     console.log(error);
@@ -409,7 +416,7 @@ const signupOrLoginWithFacebook = (req, res) => {
      
    // mail options
       const  Mail_Option = {
-      from: email_S,
+      // from: "fedi.benrodhane@esprit.tn",
       to: email, // Replace with recipient's email address
       subject: 'Verify your email',
       html: `<p> Please Verify your  <b>Email adress</b> to complete the sign up into your account.</p>

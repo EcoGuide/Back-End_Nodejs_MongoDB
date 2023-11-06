@@ -14,15 +14,24 @@ const JWT_secret = 'some super secret.....'
 
 
     // ----------A  ne pas modfidier!!!!!!!!--------------------
+    
+    // var transporter= nodemailer.createTransport({
+    //   host: "sandbox.smtp.mailtrap.io",
+    //   port: 2525,
+    //   auth: {
+    //     user: "08fe374607a4f2",
+    //     pass: "3d63cd83b30b68"
+    //   }
+    // });
+    // ------------Test SENING MAIL------------------------------------------------
     var transporter= nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
+      service:"gmail",
       auth: {
-        user: "08fe374607a4f2",
-        pass: "3d63cd83b30b68"
+        user: "fedi.benromdhane@esprit.tn",
+        pass: "bmzqluzhxefmqgde"
       }
     });
-    // ------------Test SENING MAIL------------------------------------------------
+    
     // Email options
     const mailOptions = {
       from: email_S,

@@ -2,10 +2,15 @@ import passport from 'passport';
 import FacebookStrategy from 'passport-facebook';
 import User from '../model/User.js'; // Assurez-vous de pointer vers votre modèle utilisateur
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+ dotenv.config();
+const clientID = process.env.CLIENT_ID
+const clientSecret = process.env.ClIENT_SECRECT
+
 
 passport.use(new FacebookStrategy.Strategy({
-    clientID: '638996038437388',
-    clientSecret: '34a861df702f65e17e2c2df2b09ca61d',
+    clientID: clientID,
+    clientSecret: clientSecret,
     callbackURL: 'http://localhost:3000/auth/facebook/callback',
     profileFields: ['id', 'displayName', 'photos', 'emails'],
     scope: ['email', 'public_profile'] // Spécifiez les autorisations requises ici
