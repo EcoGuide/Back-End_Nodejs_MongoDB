@@ -184,7 +184,7 @@ const signupOrLoginWithFacebook = (req, res) => {
 
     const FileVerification = (req,res)=>{
         res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
-      }
+      } 
   // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
     const signup_Amdin = async (req, res) => {
       const { email, password ,name} = req.body;

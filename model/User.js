@@ -9,11 +9,12 @@ dotenv.config();
 //-------------------------------------------- USER SCHEMA  --------------------------------------------------
 
 const userSchema = new mongoose.Schema({
+
   facebookId: {
     type: String,
     unique: true,
-    sparse: true  // Permet d'avoir plusieurs utilisateurs sans ID Facebook (null ou non défini)
-  },
+    required: false  
+  },  
   email: {
     type: String,
     required: [true , 'Please enter a  Email'  ],
@@ -21,10 +22,14 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     // validate:[isEmail,'Please enter a valid   Email']
   },
+  // password: {
+  //   type: String,
+  //   required: [true , 'Please enter a valid Email'  ],
+  //   minlength: 6,
+  // },
   password: {
     type: String,
-    required: [true , 'Please enter a valid Email'  ],
-    minlength: 6,
+    required: [function() { return !this.facebookId; }, 'Password is required unless signing in with Facebook']
   },
   token: {
      type: String 
@@ -37,11 +42,14 @@ const userSchema = new mongoose.Schema({
     type :String,
     // required: [true , 'Please enter a file{'  ],
   },
+// ------ Farah 
+
   role:{
     type :String,
     enum:['admin','user','guest'],
     default:'user'
   },
+
   verified:{
     type:Boolean,
     required :false
