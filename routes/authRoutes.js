@@ -26,9 +26,11 @@ router.get('/verify/:userId', authController.verificationMail);
 router.get('/verified', authController.FileVerification);
 // router.get('/authMid', verifyToken, authController.test);
 router.get('/IsAdmin', verifyRole, authController.verifyRole);
+router.get('/IsAdmin', verifyRole, authController.verifyRole);
 
 // Route pour s'inscrire ou se connecter avec Facebook
  
+
 router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 // router.get('/auth/facebook', passport.authenticate('facebook'));
 // Route de rappel après l'authentification avec Facebook
