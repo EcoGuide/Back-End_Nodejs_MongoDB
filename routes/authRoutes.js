@@ -27,3 +27,4 @@ router.get('/verified', authController.FileVerification);
 router.get('/IsAdmin', verifyRole, authController.verifyRole);
 
 export default router;
+[]
