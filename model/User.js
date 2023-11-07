@@ -22,15 +22,15 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     // validate:[isEmail,'Please enter a valid   Email']
   },
-  // password: {
-  //   type: String,
-  //   required: [true , 'Please enter a valid Email'  ],
-  //   minlength: 6,
-  // },
   password: {
     type: String,
-    required: [function() { return !this.facebookId; }, 'Password is required unless signing in with Facebook']
+    required: [true , 'Please enter a valid pwd'  ],
+    minlength: 6,
   },
+  // password: {
+  //   type: String,
+  //   required: [function() { return !this.facebookId; }, 'Password is required unless signing in with Facebook']
+  // },
   token: {
      type: String 
      },
@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
 
   role:{
     type :String,
-    enum:['admin','user','guest'],
+    enum:['admin','user','guest',],
     default:'user'
   },
 

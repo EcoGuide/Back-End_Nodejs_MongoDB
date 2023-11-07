@@ -11,7 +11,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
  const facebookOptions = {
     clientID: clientID,
     clientSecret: clientSecret,
-    callbackURL: process.env.CALLBACK_URL,
+    callbackURL: 'http://localhost:3000/auth/facebook/callback',
     profileFields: ['id', 'displayName', 'emails', 'photos'],
     enableProof: true
   };
@@ -27,7 +27,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
             email: profile.emails[0].value,
         });
     }
-
+    console.log(user);
     // Maintenant, on génère un JWT pour l'utilisateur trouvé ou créé
     const payload = { id: user.facebookId, name: user.name };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
