@@ -1,6 +1,0 @@
-
-# Ignore le répertoire node_modules
-node_modules/
-
-# Ignore les fichiers de configuration spécifiques à l'environnement (par exemple, .env)
-.env
