@@ -12,7 +12,6 @@ export default {
         price,
         discountCode,
       } = req.body;
-      //   const user = await User.findById(req.user.id);
 
       const guide = await Guide.create({
         fullname: fullname,
@@ -112,15 +111,4 @@ export default {
       });
     }
   },
-
-  // fetchPosts: async (req, res) => {
-  //     const { page } = req.params;
-  //     const posts = await Post.find().populate('user').populate({ path: 'comments', populate: { path: 'user', model: 'User', }, }).sort({ createdAt: -1 }).skip((page - 1) * 10).limit(10);
-
-  //     return res.status(200).json({
-  //         statusCode: 200,
-  //         message: 'Posts fetched',
-  //         posts: posts,
-  //     });
-  // },
 };
