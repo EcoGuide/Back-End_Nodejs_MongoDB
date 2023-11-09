@@ -2,7 +2,7 @@ import express from "express";
 import guideController from "../controller/guideController.js";
 import hotelController from "../controller/hotelController.js";
 import vehiculeController from "../controller/vehiculeController.js";
-
+import activityController from "../controller/activityController.js";
 
 const router = express.Router();
 
@@ -26,6 +26,12 @@ router.put("/vehicule/:id", vehiculeController.updateVehicule)
 router.get("/vehicule/:id", vehiculeController.fetchVehicule);
 router.get("/vehicules", vehiculeController.fetchAllVehicules);
 router.delete("/vehicule/:id", vehiculeController.deleteVehicule);
+//Activity
+router.post("/activity/add", activityController.createActivity);
+router.put("/activity/:id", activityController.updateActivity)
+router.get("/activity/:id", activityController.fetchActivity);
+router.get("/activity", activityController.fetchAllActivitys);
+router.delete("/activity/:id", activityController.deleteActivity);
 
 
 export default router;
