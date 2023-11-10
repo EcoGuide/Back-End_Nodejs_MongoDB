@@ -14,12 +14,14 @@ const secretKey = process.env.SECRET_KEY;
 
 // ... (votre code existant)
 
-router.post('/signupA',multer, authController.signup_Amdin);
+router.post('/signupA', authController.signup_Amdin);
 router.post('/signupU',multer , authController.signup_User);
 router.post('/SignIn', authController.SignIn);  
 router.get('/logout', authController.logout);
 router.post('/EditProfile', verifyToken,authController.EditProfile);
 router.post('/forgot-password', reset_password.forgot_password);
+router.post('/forgot-password-sms', reset_password.forgot_password_sms);
+
 // router.get('/reset-password/:id/:token', reset_password.reset_password_View);
 router.post('/reset-password/:id/:token', reset_password.reset_password);
 router.get('/verify/:userId', authController.verificationMail);

@@ -38,15 +38,19 @@ const userSchema = new mongoose.Schema({
     type :String,
     required: [true , 'Please enter a Name'  ],
   },
+  telephone: {
+    type: String,
+      required: [true , 'Please enter your phone number'  ],
+    minlength: 8,
+  },
   image:{
     type :String,
     // required: [true , 'Please enter a file{'  ],
   },
-// ------ Farah 
-
+ 
   role:{
     type :String,
-    enum:['admin','user','guest',],
+    enum:['admin','user','guest','guide'],
     default:'user'
   },
 

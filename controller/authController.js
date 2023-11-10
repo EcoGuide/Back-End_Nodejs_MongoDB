@@ -22,6 +22,8 @@ import nodemailer from "nodemailer"
 const email_S = process.env.AUTH_EMAIL;
 const secretKey = process.env.SECRET_KEY;
  
+import twilio from 'twilio'
+
 
 // --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
 // ----------A  ne pas modfidier!!!!!!!!--------------------
@@ -33,7 +35,7 @@ const secretKey = process.env.SECRET_KEY;
 //     pass: "0246564e53d3c2"
 //   }
 // });
-
+ 
 var transporter= nodemailer.createTransport({
   service:"gmail",
   auth: {
@@ -85,6 +87,7 @@ const mailOptions = {
 //     console.log(succes);
 //   }
 // })
+
 const EXPIRED_TOKEN = 3 * 24 * 60 * 60
 const CreateToken =  (id) => {
 return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
@@ -187,22 +190,20 @@ const signupOrLoginWithFacebook = (req, res) => {
       } 
   // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
     const signup_Amdin = async (req, res) => {
-      const { email, password ,name} = req.body;
+      const { email, password ,name,telephone} = req.body;
 
       try{
-        //  const user = await User.create({email,password,name,role:'admin',verified:false})
-        //                         .then((result)=>{
-        //                           sendVerificationEmail(result,res)
-        //                         })
+                            
         const newUser = new User({
           email,
           password,
           name,
-          image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
+          telephone,
+          // image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
           role:"admin",
           verified:false
         });
-        console.log("filename"+req.file.filename);
+        // console.log("filename"+req.file.filename);
 
         newUser.save()
                 .then((result)=>{
@@ -293,7 +294,7 @@ const signupOrLoginWithFacebook = (req, res) => {
         // PAYLOAD:je place dans le payload du jwt  id_user + Email + Role
         const token = jwt.sign( { user_id: user._id,role: user.role, email },secretKey,{expiresIn: EXPIRED_TOKEN,} );
          user.token = token;
-        res.status(200).json({User:user,Token:token});
+        res.status(200).json({status:200,Token:token});
       }
     }
         

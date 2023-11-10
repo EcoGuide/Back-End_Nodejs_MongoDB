@@ -6,11 +6,15 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import path from 'path'
 import nodemailer from "nodemailer"
- 
- 
+import dotenv from 'dotenv';
+import twilio from 'twilio'
+
+dotenv.config();
+ import Message from '../model/message.js'
 // const JWT_secret = process.env.SECRET_KEY;
 const email_S = process.env.AUTH_EMAIL;
 const JWT_secret = 'some super secret.....'
+const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 
     // ----------A  ne pas modfidier!!!!!!!!--------------------
@@ -38,6 +42,139 @@ const JWT_secret = 'some super secret.....'
       to: 'fedi.benromdhane@esprit.tn', // Replace with recipient's email address
       subject: 'Sending Email using Node.js',
       text: 'sahbi haffa!',
+    }
+    async function sendMessage(body,number) {
+ 
+      try {
+        //  const verificationCode = Math.floor(1000 + Math.random() * 9000);
+        
+        // Create a new verification code record
+        // const code = new Code({
+        //   UserID: _id, // This ensures the _id is a string.
+        //   code: verificationCode
+        // });
+    
+        // Save the verification code to the database
+        // await  code.save();
+    
+        // Send the verification code via SMS
+        const message = client.messages.create({
+          to: number, 
+          from: process.env.TWILIO_PHONE_NUMBER,
+          body: body
+          // body: `Your verification code is: ${verificationCode}`
+        });
+        console.log(`Sending message to ${number}`);
+
+         const messageRecord = new Message({
+          to: number,
+          body: message.body,
+          dateSent: new Date(),
+          sid: message.sid
+        });
+    
+        // Save the message record to the database
+        await  messageRecord.save();
+        console.log('Message sent and saved:', message.sid);
+    
+        // Optionally return a result here if you need to send a response to the client
+        return {
+          success: true,
+          message: 'Verification code sent.',
+          sid: message.sid
+        };
+        
+      } catch (error) {
+         console.error('Error sending message:', error);
+    
+        // Optionally throw the error or return an error response here
+        return {
+          success: false,
+          message: 'Failed to send verification code.',
+          error: error.message
+        };
+      }
+    
+  }
+    
+    // async function sendMessage(_id,number) {
+
+    //   try {
+    //     const verificationCode = Math.floor(1000 + Math.random() * 9000);
+    //     const code = new Code({
+    //       UserID: _id,
+    //       code: verificationCode
+    //     });
+    
+    //     code.save()
+    //     const message = await client.messages.create({
+    //       to: number,
+    //       from: process.env.TWILIO_PHONE_NUMBER,
+    //       body: verificationCode
+    //     });
+    
+    //     const messageRecord = new Message({
+    //       to,
+    //       body,
+    //       dateSent: new Date(),
+    //       sid: message.sid
+    //     });
+    
+    //     await messageRecord.save();
+    //     console.log('Message sent and saved:', message.sid);
+    //   } catch (error) {
+    //     console.error('Error sending message:', error);
+    //   }
+  
+    // }
+    const forgot_password_sms= async (req, res) => {
+      const verificationCode = Math.floor(1000 + Math.random() * 9000);
+
+      try {
+        const { telephone } = req.body;
+    
+        if (!telephone) {
+          res.status(400).send("All input is required");
+          return;
+        }
+    
+        const user = await User.findOne({ telephone });
+        console.log("user phone"+user.telephone);
+        if (!user) {
+          res.json({
+            status: "Failed",
+            message: "Sorry ! You are not registered!"
+          });
+          return;
+        }
+        const code = new Code({
+          UserID: user._id, // This ensures the _id is a string.
+          code: verificationCode
+        });
+        await  code.save();
+        await sendMessage(verificationCode, telephone)
+ 
+         const secret = JWT_secret + user.password;
+    
+        const payload = {
+          telephone: user.telephone,
+          id: user._id,
+          code: verificationCode
+        };
+    
+        const token = jwt.sign(payload, secret, { expiresIn: '15m' });
+        const link = `http://localhost:3000/reset-password/${user._id}/${token}`;
+    
+        res.send({
+          message: 'Password reset link was sent. Check your email.',
+          Link: link,
+          Token: token,
+          Code:verificationCode
+        });
+      } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      }
     }
 const forgot_password = async (req, res, next) => {
   try {
@@ -75,19 +212,15 @@ const forgot_password = async (req, res, next) => {
     res.send({
       message: 'Password reset link was sent. Check your email.',
       Link: link,
-      Token: token
+      Token: token,
+      Code:verificationCode
     });
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");
   }
 };
-      
-
-
  
-
-
 const reset_password_View  = async (req, res,next) => {
  
     const{id,token}=req.params
@@ -120,9 +253,6 @@ const reset_password = async (req, res, next) => {
       await user.save();
 
       await storedCode.delete();
-
-
-
       res.status(200).send({ message: "Password has been successfully reset", User: user });
     } else {
       res.status(400).send("Invalid verification code");
@@ -188,7 +318,7 @@ const reset_password = async (req, res, next) => {
     // }
 
 //---------------------------------------- SEND VERIFICATION CODE  AND SAVE IT ------------------------------------------------------
-const sendVerificationEmail = ({ _id, email }) => {
+const sendVerificationEmail = ({_id, email }) => {
   return new Promise((resolve, reject) => {
     // Generate random verification code
     const verificationCode = Math.floor(1000 + Math.random() * 9000);
@@ -220,8 +350,8 @@ const sendVerificationEmail = ({ _id, email }) => {
       });
   });
 }
-
- export default {forgot_password,reset_password_View,reset_password,sendVerificationEmail }
+ 
+ export default {forgot_password,reset_password_View,reset_password,sendVerificationEmail ,forgot_password_sms}
   
 // const User = require('../model/User')
 // const Code = require('../model/CodeVerification')
