@@ -185,7 +185,7 @@ const signupOrLoginWithFacebook = (req, res) => {
     const FileVerification = (req,res)=>{
         res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
       } 
-  // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
+   // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
     const signup_Amdin = async (req, res) => {
       const { email, password ,name} = req.body;
 
@@ -198,7 +198,7 @@ const signupOrLoginWithFacebook = (req, res) => {
           email,
           password,
           name,
-          image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
+          // image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
           role:"admin",
           verified:false
         });
@@ -229,10 +229,10 @@ const signupOrLoginWithFacebook = (req, res) => {
               res.status(400).send("Bad request so Admin not created")
       }
     }
-  //---------------------------------------------------USER SIGN UP --------------------------------------------------------------
+   //---------------------------------------------------USER SIGN UP --------------------------------------------------------------
 
     const signup_User = async (req, res) => {
-    const { email, password ,name} = req.body;
+    const { email, password ,name,telephone} = req.body;
 
     try{
        
@@ -240,7 +240,8 @@ const signupOrLoginWithFacebook = (req, res) => {
         email,
         password,
         name,
-        image: `${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
+        telephone,
+        // image: `${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
         role:"user",
         verified:false
       });
@@ -304,7 +305,6 @@ const signupOrLoginWithFacebook = (req, res) => {
     }
       
  //----------------------------------------------------Logout----------------------------------------------------------------------
-
     const logout = async (req,res)=>{
       
         const header = req.header('Authorization');

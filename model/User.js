@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
     type :String,
     required: [true , 'Please enter a Name'  ],
   },
+  telephone:{
+    type :String,
+    required: [true , 'Please enter a number'  ],
+  },
   image:{
     type :String,
     // required: [true , 'Please enter a file{'  ],
