@@ -3,6 +3,7 @@ import { Guide } from "../model/guide.js";
 export default {
   createGuide: async (req, res) => {
     try {
+      console.log(req.body);
       const {
         fullname,
         location,
@@ -17,7 +18,7 @@ export default {
         fullname: fullname,
         location: location,
         description: description,
-        image: image,
+        image: `${req.protocol}://${req.get("host")}${process.env.IMGURL}/${req.file.filename}`,
         reviews: reviews,
         price: price,
         discountCode: discountCode,
