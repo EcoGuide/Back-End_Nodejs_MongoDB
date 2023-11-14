@@ -9,7 +9,7 @@ mongoose.Promise = global.Promise;
 
 const connectDb = () => {
   mongoose
-    .connect(`mongodb://${databaseURL}/${databaseName}`)
+    .connect(`${databaseURL}/${databaseName}`)
     .then(() => {
       console.log("Connected to database");
     })
