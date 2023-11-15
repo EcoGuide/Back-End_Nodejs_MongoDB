@@ -12,8 +12,8 @@ const verifyToken = (req, res, next) => {
     console.log('------------------');  
    
     if (!token) {
-    return res.status(403).send("A token is required for authentication");
-  }
+      return res.status(401).send('Access Denied');
+    }
   else{
     
     const decoded = jwt.verify(token,secretKey);

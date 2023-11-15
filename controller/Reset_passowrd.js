@@ -7,6 +7,7 @@ import path from 'path'
 import nodemailer from "nodemailer"
 import twilio from 'twilio'
 import dotenv from 'dotenv';
+import { log } from 'console'
 dotenv.config();
 // From .env
 const email_S = process.env.AUTH_EMAIL;
@@ -95,6 +96,7 @@ const secretKey = process.env.SECRET_KEY;
     //______________________________________________ Send Code reset password By Mail ______________________________________________
     const forgot_password = async (req, res, next) => {
       try {
+
         const { email } = req.body;
 
         if (!email) {
@@ -139,9 +141,10 @@ const secretKey = process.env.SECRET_KEY;
     }
     //_______________________________________________Get verification code and Reset password  ______________________________________________
     const reset_password = async (req, res, next) => {
+      console.log(req.body);
       try {
         // const { id, token } = req.params;
-        const { password, code } = req.body;
+        const { code,password } = req.body;
 
         const header = req.header('Authorization');
         const accessToken = header.split(' ')[1];  
@@ -155,14 +158,14 @@ const secretKey = process.env.SECRET_KEY;
         console.log(decoded.id);
         const id  = decoded.id
         const storedCode = await Code.findOne({ UserID: id });
-
-        if (storedCode && storedCode.code === code) {
+        // console.log(`stored code ${storedCode.code}`);
+         if (storedCode && storedCode.code === code) {
           const user = await User.findById(id);
-
+          // console.log(user.password);
           const hashedPassword = await bcrypt.hash(password, 10);
           user.password = hashedPassword;
           await user.save();
-
+            // console.log(user.password);
           await storedCode.delete();
           res.status(200).send({ message: "Password has been successfully reset", User: user });
         } else {

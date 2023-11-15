@@ -61,7 +61,11 @@ const userSchema = new mongoose.Schema({
 });
 
 //-------------------------------------------- MONGOOS HOOK  FIRE FUNCTIONS --------------------------------------------------
-                         //----------- AFTER AND BEFORE SAVING A USER IN DATABAASE -------------
+// userSchema.pre('updateOne',function(doc,next){
+//   console.log("new user was created and saved ",doc);
+//   next();
+// })     
+//----------- AFTER AND BEFORE SAVING A USER IN DATABAASE -------------
 userSchema.post('save',function(doc,next){
     console.log("new user was created and saved ",doc);
     next();
@@ -73,6 +77,13 @@ userSchema.pre('save', async function(next){
      console.log("new user  about  to be created and saved ",this);
     next();
 })
+
+// userSchema.pre('updateOne', async function(next){
+//   const salt = await bcrypt.genSalt();
+//   this.password = await bcrypt.hash(this.password ,salt)
+//    console.log("new user  about  to be created and saved ",this);
+//   next();
+// })
 //-------------------------------------------------------------------------------------------------------------------------------------
 
 // userSchema.pre('updateOne', async function(next){

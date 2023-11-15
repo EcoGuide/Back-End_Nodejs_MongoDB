@@ -6,9 +6,9 @@ const CodeSchema = new mongoose.Schema(
     {
         UserID :{
          type:   String,
-         unique: true,
+        //  unique: true,
         },
-        code : Number
+        code : String
       },
     );
 

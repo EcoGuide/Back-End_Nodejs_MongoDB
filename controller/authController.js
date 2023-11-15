@@ -198,11 +198,12 @@ const signupOrLoginWithFacebook = (req, res) => {
           email,
           password,
           name,
+          telephone,
           // image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
           role:"admin",
           verified:false
         });
-        console.log("filename"+req.file.filename);
+        // console.log("filename"+req.file.filename);
 
         newUser.save()
                 .then((result)=>{
@@ -283,7 +284,7 @@ const signupOrLoginWithFacebook = (req, res) => {
           res.status(400).send("All input is required");
         }
         const user = await User.findOne({ email });
-
+          console.log(user.verified);
         if(!(user.verified)){
           res.json({
             status :"Failed",
@@ -364,45 +365,82 @@ const signupOrLoginWithFacebook = (req, res) => {
   //   }
   // }}
          //-------------------------------------------TEST----------------------------------------------------------------------
-    const EditProfile = async(req,res) =>{
-    
-          const {mail,password,name} = req.body
+        //-------------------------------------------TEST----------------------------------------------------------------------
+        const EditProfile = async (req, res) => {
+          const { email, password, name } = req.body;
           const header = req.header('Authorization');
-          if (!header) 
-             return res.sendStatus(403);  
-        
-          else  {
-            const accessToken = header.split(' ')[1];  
-            const decoded = jwt.verify(accessToken,secretKey);
-            const email = decoded.email; // Identifiant de l'utilisateur extrait du token
-              console.log(email);
-
-            try {
-               const user = await User.findOne({ email: email });
-               user.updateOne({email:mail},{password:password},{name:name})
-                    .then(()=>{
-                      res.json({user:user,message})
-                    })
-                    .catch(()=>{
-
-                    })
-              // const updatedUser = await User.findOneAndUpdate(userId, {
-              //   email,
-              //   password,
-              //   name
-              // }, { new: true });
-          
-              // if (!updatedUser) {
-              //   return res.status(404).json({ message: 'Utilisateur non trouvé' });
-              // }
-          
-              res.status(200).json(updatedUser);
-            } catch (error) {
+          if (!header) return res.sendStatus(403);
+      
+          const accessToken = header.split(' ')[1];
+          const decoded = jwt.verify(accessToken, secretKey);
+          const accesemail = decoded.email; // Identifiant de l'utilisateur extrait du token
+      
+          try {
+              const user = await User.findOne({ email: accesemail });
+              if (!user) {
+                  return res.status(404).json({ message: 'Utilisateur non trouvé' });
+              }
+              const salt = await bcrypt.genSalt();
+              const hashedPassword = await bcrypt.hash(password, salt);
+              // Ici, vous devez déterminer quelles propriétés vous souhaitez réellement mettre à jour
+              const updatedUser = await User.updateOne({ email: accesemail }, {
+                  $set: {
+                      email: email,
+                      password: hashedPassword, // Assurez-vous de hacher le mot de passe avant de le stocker
+                      name: name
+                  }
+              })
+              // .then(
+              //   updatedUser.save()
+              // )
+      
+              res.json({ user: updatedUser, message: 'Profil mis à jour avec succès' });
+          } catch (error) {
               console.error(error);
               res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
-            }
           }
-          };
+      };
+      
+        // const EditProfile = async(req,res) =>{
+    
+        //   const {mail,password,name} = req.body
+        //   const header = req.header('Authorization');
+        //   if (!header) 
+        //      return res.sendStatus(403);  
+        
+        //   else  {
+        //     const accessToken = header.split(' ')[1];  
+        //     const decoded = jwt.verify(accessToken,secretKey);
+        //     const email = decoded.email; // Identifiant de l'utilisateur extrait du token
+        //       console.log(email);
+
+        //     try {
+        //        const user = await User.findOne({ email: email });
+        //        user.updateOne({email:mail},{password:password},{name:name})
+        //             .then(()=>{
+        //               res.json({user:user,message})
+        //             })
+        //             .catch(()=>{
+
+        //             })
+        //       // const updatedUser = await User.findOneAndUpdate(userId, {
+        //       //   email,
+        //       //   password,
+        //       //   name
+        //       // }, { new: true });
+          
+        //       // if (!updatedUser) {
+        //       //   return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        //       // }
+          
+        //       res.status(200).json(updatedUser);
+        //     } catch (error) {
+        //       console.error(error);
+        //       res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
+        //     }
+        //   }
+        //   };
+       
        
    
     const verifyRole = async (req, res) => {
