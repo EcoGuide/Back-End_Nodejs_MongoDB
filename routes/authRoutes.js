@@ -18,7 +18,7 @@ const REDIRECT_URI = '<http://localhost:3000/auth/facebook/callback>';
 router.post('/signupA',multer, authController.signup_Amdin);
 router.post('/signupU',multer , authController.signup_User);
 router.post('/SignIn', authController.SignIn);  
-router.get('/logout', authController.logout);
+router.get('/logout',authController.logout);
 // router.post('/EditProfile',authController.EditProfile);
 router.post('/EditProfile',authController.EditProfile);
 

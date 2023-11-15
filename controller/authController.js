@@ -6,6 +6,8 @@ import morgan from "morgan"
  app.use(morgan('dev'))
 import User from '../model/User.js'
  import UserVerification from '../model/UserVerification.js'
+ import logoutU from '../model/Logout.js'
+
 //  ------------------------------------------Require Entity ------------------------------------------
 // -------------------------------------------Congiuration ------------------------------------------
 import dotenv from 'dotenv';
@@ -13,11 +15,8 @@ dotenv.config(); // Chargez les variables d'environnement
 import path from 'path'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-
-
 import nodemailer from "nodemailer"
-// import {v4:uuidv4} from "uuid"
- 
+  
 
 const email_S = process.env.AUTH_EMAIL;
 const secretKey = process.env.SECRET_KEY;
@@ -306,25 +305,26 @@ const signupOrLoginWithFacebook = (req, res) => {
     }
       
  //----------------------------------------------------Logout----------------------------------------------------------------------
-    const logout = async (req,res)=>{
+ const logout = async (req,res)=>{
       
-        const header = req.header('Authorization');
-        if (!header) 
-        return res.sendStatus(204);  
-      
-        else  {
-        const accessToken = header.split(' ')[1];  
-         const checkIfBlacklisted = await BlackList.findOne({ token: accessToken }); // Check if that token is blacklisted
-        if (checkIfBlacklisted)return res.sendStatus(204);
-          else{
-         const newBlacklist = new BlackList({  token: accessToken });
-        
-        await newBlacklist.save();
-       res.status(200).json({ message: 'You are logged out!' });
-      }
-      }
-    
-    }
+  const header = req.header('Authorization');
+  if (!header) 
+  return res.sendStatus(204);  
+
+  else  {
+  const accessToken = header.split(' ')[1];  
+   const checkIfBlacklisted = await logoutU.findOne({ token: accessToken }); // Check if that token is blacklisted
+  if (checkIfBlacklisted)return res.sendStatus(204);
+    else{
+   const newBlacklist = new logoutU({  token: accessToken });
+  
+  await newBlacklist.save();
+ res.status(200).json({ message: 'You are logged out!' });
+}
+}
+
+}
+
  //-------------------------------------------EDIT PROFILE----------------------------------------------------------------------
 
   //  module.exports.EditProfile = async(req,res) =>{
