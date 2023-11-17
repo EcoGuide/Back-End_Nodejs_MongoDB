@@ -184,7 +184,7 @@ const signupOrLoginWithFacebook = (req, res) => {
     const FileVerification = (req,res)=>{
         res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
       } 
-   // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
+// ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
     const signup_Amdin = async (req, res) => {
       const { email, password ,name} = req.body;
 
@@ -324,6 +324,26 @@ const signupOrLoginWithFacebook = (req, res) => {
 }
 
 }
+  const UserDetails= async (req,res)=>{
+    const header = req.header('Authorization');
+    if (!header) return res.sendStatus(403);
+
+    const accessToken = header.split(' ')[1];
+    const decoded = jwt.verify(accessToken, secretKey);
+    const accesemail = decoded.email; // Identifiant de l'utilisateur extrait du token
+    try {
+      const user = await User.findOne({ email: accesemail });
+      if (!user) {
+          return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+      else{
+        res.json({name:user.name,email:user.email,telephone:user.telephone})
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
+  }
+  }
 
  //-------------------------------------------EDIT PROFILE----------------------------------------------------------------------
 
@@ -525,5 +545,5 @@ const signupOrLoginWithFacebook = (req, res) => {
    }
   export default {signup_User,signup_Amdin,SignIn,logout,EditProfile,
   verificationMail,FileVerification,verifyRole,signupOrLoginWithFacebook
-
+,UserDetails
   }

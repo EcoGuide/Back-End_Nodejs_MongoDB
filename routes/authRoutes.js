@@ -19,8 +19,9 @@ router.post('/signupA',multer, authController.signup_Amdin);
 router.post('/signupU',multer , authController.signup_User);
 router.post('/SignIn', authController.SignIn);  
 router.get('/logout',authController.logout);
-// router.post('/EditProfile',authController.EditProfile);
-router.post('/EditProfile',authController.EditProfile);
+ router.post('/EditProfile',authController.EditProfile);
+ router.get('/UserDetails',authController.UserDetails);
+
 
 router.post('/forgot-password', reset_password.forgot_password);
 router.post('/forgot-password-sms', reset_password.forgot_password_sms);
