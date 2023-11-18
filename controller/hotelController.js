@@ -111,7 +111,7 @@ export default {
     fetchHotel: async (req, res) => {
         try {
             const hotelId = req.params.id;
-            const hotel = await Hotel.findById(hotelId);
+            const hotel = await Hotel.findById(hotelId).populate("chambres");
 
             if (!hotel) {
                 return res.status(404).json({

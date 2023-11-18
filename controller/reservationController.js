@@ -64,9 +64,9 @@ export default {
                     message: "Reservation not found",
                 });
             }
-            reservation.startDate = startDate || hotel.startDate;
-            reservation.nbdays = nbdays || hotel.nbdays;
-            reservation.totalPrice = totalPrice || hotel.totalPrice;
+            reservation.startDate = startDate || reservation.startDate;
+            reservation.nbdays = nbdays || reservation.nbdays;
+            reservation.totalPrice = totalPrice || reservation.totalPrice;
             if (chambres && chambres.length > 0) {
                 reservation.chambres = chambres;
             }
@@ -74,7 +74,7 @@ export default {
 
             return res.status(200).json({
                 statusCode: 200,
-                message: "Hotel updated",
+                message: "Reservation updated",
                 reservation: reservation,
             });
         } catch (error) {
@@ -164,5 +164,32 @@ export default {
             });
         }
 
+    },
+
+    deletereservationH: async (req, res) => {
+        try {
+            const reservationHId = req.params.id;
+            const reservation = await ReservationH.findById(reservationHId);
+
+            if (!reservation) {
+                return res.status(404).json({
+                    statusCode: 404,
+                    message: "reservation not found",
+                });
+            }
+
+            await reservation.remove();
+
+            return res.status(200).json({
+                statusCode: 200,
+                message: "reservation deleted successfully",
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                statusCode: 500,
+                message: "Internal server error",
+            });
+        }
     },
 }

@@ -26,6 +26,10 @@ const houseSchema = new Schema(
             type: String,
             required: true,
         },
+        nbChambre: {
+            type: Number,
+            require: true,
+        }
     }
 );
 

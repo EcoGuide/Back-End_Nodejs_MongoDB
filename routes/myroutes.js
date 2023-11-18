@@ -5,7 +5,8 @@ import { singleImage } from "../Midlleware/multer-config.js";
 import chambreController from "../controller/chambreController.js";
 import reservationController from "../controller/reservationController.js";
 const router = express.Router();
-
+import houseController from "../controller/houseController.js";
+import reservationHouseController from "../controller/reservationHouseController.js";
 
 // Guide
 router.post('/guide/add', guideController.createGuide);
@@ -34,5 +35,20 @@ router.put('/reservationH/:id', reservationController.updateReservationH);
 router.get('/reservationH/:id', reservationController.getReservationById);
 router.get('/reservationHs', reservationController.getAllReservations);
 router.get('/reservationH/all-with-hotel-details', reservationController.getAllReservationsWithHotelDetails);
+router.delete("/reservationH/:id", reservationController.deletereservationH);
+
+//House
+router.post('/house/add', houseController.createHouse);
+router.put('/house/:id', houseController.updateHouse);
+router.get('/house/:id', houseController.fetchHouse);
+router.get('/houses', houseController.fetchAllHouses);
+router.delete("/house/:id", houseController.deleteHouse);
+
+//reservation house
+router.post('/reservationHouse/add', reservationHouseController.createreservationHouse);
+router.put('/reservationHouse/:id', reservationHouseController.updateReservationHouse);
+router.get('/reservationHouse/:id', reservationHouseController.getreservationHouseById);
+router.get('/reservationHouse', reservationHouseController.getAllreservationHouse);
+router.delete("/reservationHouse/:id", reservationHouseController.deletereservationHouse);
 
 export default router;
