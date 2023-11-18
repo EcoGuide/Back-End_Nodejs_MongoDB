@@ -136,7 +136,7 @@ export default {
 
     fetchAllHotels: async (req, res) => {
         try {
-            const hotels = await Hotel.find();
+            const hotels = await Hotel.find().populate("chambres");
 
             return res.status(200).json({
                 statusCode: 200,

@@ -135,35 +135,7 @@ export default {
             });
         }
     },
-    getChambresByHotelId: async (req, res) => {
-        try {
-            const hotelId = req.params.hotelId; // Assuming you have hotelId in your route params
 
-            // Use the populate method to retrieve details of the associated chambres
-            const hotelWithChambres = await Hotel.findById(hotelId).populate('chambres');
-
-            if (!hotelWithChambres) {
-                return res.status(404).json({
-                    statusCode: 404,
-                    message: 'Hotel not found',
-                });
-            }
-
-            const chambres = hotelWithChambres.chambres;
-
-            return res.status(200).json({
-                statusCode: 200,
-                message: 'Chambres retrieved for the hotel',
-                chambres,
-            });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({
-                statusCode: 500,
-                message: 'Internal server error',
-            });
-        }
-    },
 
     deleteChambre: async (req, res) => {
         try {

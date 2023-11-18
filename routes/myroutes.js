@@ -26,7 +26,6 @@ router.post("/chambre/add", singleImage, chambreController.createChambre);
 router.put("/chambre/:id", singleImage, chambreController.updateChambre);
 router.get("/chambre/:id", chambreController.fetchChambre);
 router.get("/chambres", chambreController.fetchAllChambres);
-router.get('/hotel/:hotelId/chambres', chambreController.getChambresByHotelId);
 router.delete("/chambre/:id", chambreController.deleteChambre);
 
 //Reservation
