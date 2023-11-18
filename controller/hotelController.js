@@ -4,22 +4,35 @@ export default {
     createHotel: async (req, res) => {
         try {
             const {
+                hotelname,
                 nbChambre,
                 location,
                 nbStars,
                 image,
                 rating,
+                Favoris,
+                description,
+                price,
+                chambres,
             } = req.body;
 
             const hotel = await Hotel.create({
+                hotelname: hotelname,
                 nbChambre: nbChambre,
                 location: location,
                 nbStars: nbStars,
-                image: image,
+                image: `${req.protocol}://${req.get("host")}${process.env.IMGURL}/${req.file.filename}`,
                 rating: rating,
+                Favoris: Favoris,
+                description: description,
+                price: price,
             });
-
-            await hotel.save();
+            if (chambres && chambres.length > 0) {
+                // Assuming chambres is an array of room IDs
+                hotel.chambres = chambres;
+                await hotel.save();
+            }
+            // await hotel.save();
 
             return res.status(201).json({
                 statusCode: 201,
@@ -39,11 +52,16 @@ export default {
         try {
             const hotelId = req.params.id;
             const {
+                hotelname,
                 nbChambre,
                 location,
                 nbStars,
                 image,
                 rating,
+                Favoris,
+                description,
+                price,
+                chambres,
             } = req.body;
 
             if (!hotelId) {
@@ -61,13 +79,18 @@ export default {
                     message: "Hotel not found",
                 });
             }
-
+            hotel.hotelname = hotelname || hotel.hotelname;
             hotel.nbChambre = nbChambre || hotel.nbChambre;
             hotel.location = location || hotel.location;
             hotel.nbStars = nbStars || hotel.nbStars;
-            hotel.image = image || hotel.image;
+            hotel.image = `${req.protocol}://${req.get("host")}${process.env.IMGURL}/${req.file.filename}` || hotel.image;
             hotel.rating = rating || hotel.rating;
-
+            hotel.Favoris = Favoris || hotel.Favoris;
+            hotel.description = description || hotel.description;
+            hotel.price = price || hotel.price;
+            if (chambres && chambres.length > 0) {
+                hotel.chambres = chambres;
+            }
             await hotel.save();
 
             return res.status(200).json({
