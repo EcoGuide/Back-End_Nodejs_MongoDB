@@ -8,13 +8,14 @@ const secretKey = process.env.SECRET_KEY;
 const verifyToken = (req, res, next) => {
 
     const header = req.header('Authorization');
-     const token = header.split(' ')[1];  
+    const token = header.split(' ')[1];  
     console.log('------------------');  
    
     if (!token) {
-    return res.status(403).send("A token is required for authentication");
-  }
+      return res.status(401).send('Access Denied');
+    }
   else{
+    
     const decoded = jwt.verify(token,secretKey);
     console.log(decoded);
     req.user = decoded;

@@ -1,8 +1,6 @@
-
-
 import mongoose from 'mongoose';
 
-const BlacklistSchema = new mongoose.Schema(
+const lougoutSchema = new mongoose.Schema(
     {
         token: {
           type: String,
@@ -12,6 +10,6 @@ const BlacklistSchema = new mongoose.Schema(
       },
       { timestamps: true },
     );
-    const Blacklist = mongoose.model('blacklist', BlacklistSchema);
-    export { Blacklist };
+    const logout = mongoose.model('logout', lougoutSchema);
+    export default logout 
     

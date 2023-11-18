@@ -6,6 +6,8 @@ import morgan from "morgan"
  app.use(morgan('dev'))
 import User from '../model/User.js'
  import UserVerification from '../model/UserVerification.js'
+ import logoutU from '../model/Logout.js'
+
 //  ------------------------------------------Require Entity ------------------------------------------
 // -------------------------------------------Congiuration ------------------------------------------
 import dotenv from 'dotenv';
@@ -13,11 +15,8 @@ dotenv.config(); // Chargez les variables d'environnement
 import path from 'path'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-
-
 import nodemailer from "nodemailer"
-// import {v4:uuidv4} from "uuid"
- 
+  
 
 const email_S = process.env.AUTH_EMAIL;
 const secretKey = process.env.SECRET_KEY;
@@ -185,11 +184,11 @@ const signupOrLoginWithFacebook = (req, res) => {
     }
 // ----------------------------------------  REDIRECT TO PAGE MAIL VERIFIED ------------------------------------------------------
 
-    const FileVerification = (req,res)=>{
-        res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
+ const FileVerification = (req,res)=>{
+ res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
       } 
-  // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
-    const signup_Amdin = async (req, res) => {
+// ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
+  const signup_Amdin = async (req, res) => {
       const { email, password ,name,telephone} = req.body;
 
       try{
@@ -229,11 +228,10 @@ const signupOrLoginWithFacebook = (req, res) => {
               console.log(error);
               res.status(400).send("Bad request so Admin not created")
       }
-    }
-  //---------------------------------------------------USER SIGN UP --------------------------------------------------------------
-
-    const signup_User = async (req, res) => {
-    const { email, password ,name} = req.body;
+  }
+   //---------------------------------------------------USER SIGN UP --------------------------------------------------------------
+  const signup_User = async (req, res) => {
+    const { email, password ,name,telephone} = req.body;
 
     try{
        
@@ -241,7 +239,8 @@ const signupOrLoginWithFacebook = (req, res) => {
         email,
         password,
         name,
-        image: `${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
+        telephone,
+        // image: `${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
         role:"user",
         verified:false
       });
@@ -272,9 +271,54 @@ const signupOrLoginWithFacebook = (req, res) => {
             console.log(error);
             res.status(400).send("Bad request so User not created")
     }
-   }
+  }
+
+  //--------------------------------------SIGNUP GUIDE___________________
+  const signup_Guide = async (req, res) => {
+    const { email, password ,name,telephone} = req.body;
+
+    try{
+      //  const user = await User.create({email,password,name,role:'admin',verified:false})
+      //                         .then((result)=>{
+      //                           sendVerificationEmail(result,res)
+      //                         })
+      const newUser = new User({
+        email,
+        password,
+        name,
+        telephone,
+        // image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
+        role:"guidetouristique",
+        verified:false
+      });
+ 
+      newUser.save()
+              .then((result)=>{
+                console.log(result);
+                sendVerificationEmail({ _id: result._id, email: result.email },res)
+                
+              })
+              .catch((err)=>{
+                console.log(err);
+                res.json({
+                  status:"Failed",
+                  message :" An error was occured while saving User"
+                })
+              })
+
+
+
+      const token = CreateToken(newUser._id)
+      console.log(" user  token : "+ token);
+      newUser.token = token;
+
+    }catch(error){
+            console.log(error);
+            res.status(400).send("Bad request so Admin not created")
+    }
+}
  // ----------------------------------------------------- LOGIN-------------------------------------------------------------------
-    const SignIn = async (req, res) => {
+  const SignIn = async (req, res) => {
  
     try {
         const { email, password } = req.body;
@@ -283,7 +327,7 @@ const signupOrLoginWithFacebook = (req, res) => {
           res.status(400).send("All input is required");
         }
         const user = await User.findOne({ email });
-
+          console.log(user.verified);
         if(!(user.verified)){
           res.json({
             status :"Failed",
@@ -302,29 +346,48 @@ const signupOrLoginWithFacebook = (req, res) => {
       } catch (err) {
         console.log(err);
       }  
-    }
-      
+  }    
  //----------------------------------------------------Logout----------------------------------------------------------------------
+  const logout = async (req,res)=>{
+      
+  const header = req.header('Authorization');
+  if (!header) 
+  return res.sendStatus(204);  
 
-    const logout = async (req,res)=>{
-      
-        const header = req.header('Authorization');
-        if (!header) 
-        return res.sendStatus(204);  
-      
-        else  {
-        const accessToken = header.split(' ')[1];  
-         const checkIfBlacklisted = await BlackList.findOne({ token: accessToken }); // Check if that token is blacklisted
-        if (checkIfBlacklisted)return res.sendStatus(204);
-          else{
-         const newBlacklist = new BlackList({  token: accessToken });
-        
-        await newBlacklist.save();
-       res.status(200).json({ message: 'You are logged out!' });
+  else  {
+  const accessToken = header.split(' ')[1];  
+   const checkIfBlacklisted = await logoutU.findOne({ token: accessToken }); // Check if that token is blacklisted
+  if (checkIfBlacklisted)return res.sendStatus(204);
+    else{
+   const newBlacklist = new logoutU({  token: accessToken });
+  
+  await newBlacklist.save();
+ res.status(200).json({ message: 'You are logged out!' });
+}
+}
+
+  }
+  const UserDetails= async (req,res)=>{
+    const header = req.header('Authorization');
+    if (!header) return res.sendStatus(403);
+
+    const accessToken = header.split(' ')[1];
+    const decoded = jwt.verify(accessToken, secretKey);
+    const accesemail = decoded.email; // Identifiant de l'utilisateur extrait du token
+    try {
+      const user = await User.findOne({ email: accesemail });
+      if (!user) {
+          return res.status(404).json({ message: 'Utilisateur non trouvé' });
       }
+      else{
+        res.json({name:user.name,email:user.email,telephone:user.telephone})
       }
-    
-    }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
+  }
+  }
+
  //-------------------------------------------EDIT PROFILE----------------------------------------------------------------------
 
   //  module.exports.EditProfile = async(req,res) =>{
@@ -365,45 +428,82 @@ const signupOrLoginWithFacebook = (req, res) => {
   //   }
   // }}
          //-------------------------------------------TEST----------------------------------------------------------------------
-    const EditProfile = async(req,res) =>{
-    
-          const {mail,password,name} = req.body
+        //-------------------------------------------TEST----------------------------------------------------------------------
+  const EditProfile = async (req, res) => {
+          const { email, password, name } = req.body;
           const header = req.header('Authorization');
-          if (!header) 
-             return res.sendStatus(403);  
-        
-          else  {
-            const accessToken = header.split(' ')[1];  
-            const decoded = jwt.verify(accessToken,secretKey);
-            const email = decoded.email; // Identifiant de l'utilisateur extrait du token
-              console.log(email);
-
-            try {
-               const user = await User.findOne({ email: email });
-               user.updateOne({email:mail},{password:password},{name:name})
-                    .then(()=>{
-                      res.json({user:user,message})
-                    })
-                    .catch(()=>{
-
-                    })
-              // const updatedUser = await User.findOneAndUpdate(userId, {
-              //   email,
-              //   password,
-              //   name
-              // }, { new: true });
-          
-              // if (!updatedUser) {
-              //   return res.status(404).json({ message: 'Utilisateur non trouvé' });
-              // }
-          
-              res.status(200).json(updatedUser);
-            } catch (error) {
+          if (!header) return res.sendStatus(403);
+      
+          const accessToken = header.split(' ')[1];
+          const decoded = jwt.verify(accessToken, secretKey);
+          const accesemail = decoded.email; // Identifiant de l'utilisateur extrait du token
+      
+          try {
+              const user = await User.findOne({ email: accesemail });
+              if (!user) {
+                  return res.status(404).json({ message: 'Utilisateur non trouvé' });
+              }
+              const salt = await bcrypt.genSalt();
+              const hashedPassword = await bcrypt.hash(password, salt);
+              // Ici, vous devez déterminer quelles propriétés vous souhaitez réellement mettre à jour
+              const updatedUser = await User.updateOne({ email: accesemail }, {
+                  $set: {
+                      email: email,
+                      password: hashedPassword, // Assurez-vous de hacher le mot de passe avant de le stocker
+                      name: name
+                  }
+              })
+              // .then(
+              //   updatedUser.save()
+              // )
+      
+              res.json({ user: updatedUser, message: 'Profil mis à jour avec succès' });
+          } catch (error) {
               console.error(error);
               res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
-            }
           }
-          };
+  };
+      
+        // const EditProfile = async(req,res) =>{
+    
+        //   const {mail,password,name} = req.body
+        //   const header = req.header('Authorization');
+        //   if (!header) 
+        //      return res.sendStatus(403);  
+        
+        //   else  {
+        //     const accessToken = header.split(' ')[1];  
+        //     const decoded = jwt.verify(accessToken,secretKey);
+        //     const email = decoded.email; // Identifiant de l'utilisateur extrait du token
+        //       console.log(email);
+
+        //     try {
+        //        const user = await User.findOne({ email: email });
+        //        user.updateOne({email:mail},{password:password},{name:name})
+        //             .then(()=>{
+        //               res.json({user:user,message})
+        //             })
+        //             .catch(()=>{
+
+        //             })
+        //       // const updatedUser = await User.findOneAndUpdate(userId, {
+        //       //   email,
+        //       //   password,
+        //       //   name
+        //       // }, { new: true });
+          
+        //       // if (!updatedUser) {
+        //       //   return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        //       // }
+          
+        //       res.status(200).json(updatedUser);
+        //     } catch (error) {
+        //       console.error(error);
+        //       res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
+        //     }
+        //   }
+        //   };
+       
        
    
     const verifyRole = async (req, res) => {
@@ -488,5 +588,5 @@ const signupOrLoginWithFacebook = (req, res) => {
    }
   export default {signup_User,signup_Amdin,SignIn,logout,EditProfile,
   verificationMail,FileVerification,verifyRole,signupOrLoginWithFacebook
-
+,UserDetails,signup_Guide
   }
