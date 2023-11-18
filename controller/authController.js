@@ -181,11 +181,11 @@ const signupOrLoginWithFacebook = (req, res) => {
     }
 // ----------------------------------------  REDIRECT TO PAGE MAIL VERIFIED ------------------------------------------------------
 
-    const FileVerification = (req,res)=>{
-        res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
+ const FileVerification = (req,res)=>{
+ res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
       } 
 // ---------------------------------------------  SIGN UP ADMIN ----------------------------------------------------------------
-    const signup_Amdin = async (req, res) => {
+  const signup_Amdin = async (req, res) => {
       const { email, password ,name} = req.body;
 
       try{
@@ -228,10 +228,9 @@ const signupOrLoginWithFacebook = (req, res) => {
               console.log(error);
               res.status(400).send("Bad request so Admin not created")
       }
-    }
+  }
    //---------------------------------------------------USER SIGN UP --------------------------------------------------------------
-
-    const signup_User = async (req, res) => {
+  const signup_User = async (req, res) => {
     const { email, password ,name,telephone} = req.body;
 
     try{
@@ -272,9 +271,54 @@ const signupOrLoginWithFacebook = (req, res) => {
             console.log(error);
             res.status(400).send("Bad request so User not created")
     }
-   }
+  }
+
+  //--------------------------------------SIGNUP GUIDE___________________
+  const signup_Guide = async (req, res) => {
+    const { email, password ,name,telephone} = req.body;
+
+    try{
+      //  const user = await User.create({email,password,name,role:'admin',verified:false})
+      //                         .then((result)=>{
+      //                           sendVerificationEmail(result,res)
+      //                         })
+      const newUser = new User({
+        email,
+        password,
+        name,
+        telephone,
+        // image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
+        role:"guidetouristique",
+        verified:false
+      });
+ 
+      newUser.save()
+              .then((result)=>{
+                console.log(result);
+                sendVerificationEmail({ _id: result._id, email: result.email },res)
+                
+              })
+              .catch((err)=>{
+                console.log(err);
+                res.json({
+                  status:"Failed",
+                  message :" An error was occured while saving User"
+                })
+              })
+
+
+
+      const token = CreateToken(newUser._id)
+      console.log(" user  token : "+ token);
+      newUser.token = token;
+
+    }catch(error){
+            console.log(error);
+            res.status(400).send("Bad request so Admin not created")
+    }
+}
  // ----------------------------------------------------- LOGIN-------------------------------------------------------------------
-    const SignIn = async (req, res) => {
+  const SignIn = async (req, res) => {
  
     try {
         const { email, password } = req.body;
@@ -302,10 +346,9 @@ const signupOrLoginWithFacebook = (req, res) => {
       } catch (err) {
         console.log(err);
       }  
-    }
-      
+  }    
  //----------------------------------------------------Logout----------------------------------------------------------------------
- const logout = async (req,res)=>{
+  const logout = async (req,res)=>{
       
   const header = req.header('Authorization');
   if (!header) 
@@ -323,7 +366,7 @@ const signupOrLoginWithFacebook = (req, res) => {
 }
 }
 
-}
+  }
   const UserDetails= async (req,res)=>{
     const header = req.header('Authorization');
     if (!header) return res.sendStatus(403);
@@ -386,7 +429,7 @@ const signupOrLoginWithFacebook = (req, res) => {
   // }}
          //-------------------------------------------TEST----------------------------------------------------------------------
         //-------------------------------------------TEST----------------------------------------------------------------------
-        const EditProfile = async (req, res) => {
+  const EditProfile = async (req, res) => {
           const { email, password, name } = req.body;
           const header = req.header('Authorization');
           if (!header) return res.sendStatus(403);
@@ -419,7 +462,7 @@ const signupOrLoginWithFacebook = (req, res) => {
               console.error(error);
               res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
           }
-      };
+  };
       
         // const EditProfile = async(req,res) =>{
     
@@ -545,5 +588,5 @@ const signupOrLoginWithFacebook = (req, res) => {
    }
   export default {signup_User,signup_Amdin,SignIn,logout,EditProfile,
   verificationMail,FileVerification,verifyRole,signupOrLoginWithFacebook
-,UserDetails
+,UserDetails,signup_Guide
   }
